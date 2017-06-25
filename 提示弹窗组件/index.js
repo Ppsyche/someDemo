@@ -7,8 +7,7 @@ requirejs.config({
 require(['jquery','pop_up'],function($,Dialog){
     $('.button1').on('click',function(){
         var dialog = new Dialog();
-        dialog.open();
-        
+        dialog.open();  
     });
     $('.button2').on('click',function(){
         var dialog = new Dialog({
