@@ -1,10 +1,15 @@
 requirejs.config({
     baseUrl: '',
     paths: {
-        jquery: 'jquery-1.12.4'
+        jquery: 'jquery.min',
+        jqueryMobile: 'jquery.mobile-1.4.5.min'
+    },
+    shim: {
+        jquery: {exports: 'jquery'},
+        jqueryMobile: {deps: ['jquery']}
     }
 });
-define(['jquery'],function($){
+define(['jquery','jqueryMobile'],function($){
     function Dialog(option){
         var _this = this;
         var defaultVal = {
@@ -38,7 +43,18 @@ define(['jquery'],function($){
             .css('color',option.wordColor);
         this.$popTop = $('<div class="pop-top"></div>')
             .css('background',option.topColor);
-        this.$popBody = $('<div class="pop-body">');
+        this.$popBody = $('<div class="pop-body"></div>');
+        this.$phoneImg = $('<div class="phone-img"></div>')
+            .css({
+                'background':'#000 url("'+option.imgSrc+'") 0 50% no-repeat',
+                'background-size': 'contain'
+            })
+            .on('tap',function(e){
+                _this.colse();
+                e.preventDefault();
+                return false;
+            });
+        this.$windowWidth = $(window).width();
         if(option.animated){
             this.$pop.css({
                 '-webkit-animation-name': 'zoom',
@@ -49,19 +65,33 @@ define(['jquery'],function($){
         }
     }
     Dialog.prototype.open = function(){
-        if(this.$style == 'full'){
-            this.$pop.append(this.$colse);
-            this.$pop.append(this.$popImg);
-            this.$pop.append(this.$title);
-        }else if(this.$style == 'classical'){
-            this.$popTop.append(this.$colse);
-            this.$popTop.append(this.$title);
-            this.$popBody.append(this.$popImg);
-            this.$pop.append(this.$popTop);
-            this.$pop.append(this.$popBody);
-        }
-        this.$popImgBg.append(this.$pop);
-        $('body').append(this.$popImgBg);
+        var _this = this;
+        if(this.$windowWidth <= 662){
+             this.$popImgBg.append(this.$phoneImg);
+            $('body').append(this.$popImgBg);
+        }else{
+            if(this.$style == 'full'){
+                this.$popImgBg.append(this.$colse);
+                this.$pop.append(this.$popImg);
+                this.$pop.append(this.$title);
+                this.$pop.on('click',function(e){
+                    e.stopPropagation();
+                });
+                this.$popImgBg.on('click',function(e){
+                    if(!_this.$pop.is(e.target)){
+                        _this.colse();
+                    }           
+                });
+            }else if(this.$style == 'classical'){
+                this.$popTop.append(this.$colse);
+                this.$popTop.append(this.$title);
+                this.$popBody.append(this.$popImg);
+                this.$pop.append(this.$popTop);
+                this.$pop.append(this.$popBody);
+            }
+            this.$popImgBg.append(this.$pop);
+            $('body').append(this.$popImgBg);
+        }    
     }
     Dialog.prototype.colse = function(){
         this.$popImgBg.remove();

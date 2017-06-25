@@ -1,10 +1,15 @@
 requirejs.config({
     baseUrl: '',
     paths: {
-        jquery: 'jquery-1.12.4'
+        jquery: 'jquery.min',
+        jqueryMobile: 'jquery.mobile-1.4.5.min'
+    },
+    shim: {
+        jquery: {exports: 'jquery'},
+        jqueryMobile: {deps: ['jquery']}
     }
 });
-require(['jquery','pop_up_img'],function($,Dialog){
+require(['pop_up_img','jquery','jqueryMobile'],function(Dialog,$){
     $('.test-img1').on('click',function(){
         var dialog = new Dialog();
         dialog.open();
@@ -17,7 +22,7 @@ require(['jquery','pop_up_img'],function($,Dialog){
     });
     $('.test-img3').on('click',function(){
         var dialog = new Dialog({
-        	width:700,
+        	width:600,
         	height:450, 
         	imgSrc:'img.jpg',
         	style:'full',//样式full、classical
