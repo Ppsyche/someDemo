@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue日历</title>
+	<style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #calender {
+            width: 1000px;
+            margin: 100px auto;
+        }
+
+        .form {
+            text-align: center;
+            margin: 30px auto;
+            overflow: hidden;
+            height: 45px;
+            line-height: 45px;
+        }
+
+        .form .input {
+            width: 33.333%;
+            float: left;
+        }
+
+        .form .input input {
+            width: 40px;
+        }
+
+        .form .btn {
+            width: 33.333%;
+            float: left;
+        }
+
+        .form .btn button {
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #000000;
+            outline: none;
+        }
+
+        .form .date {
+            width: 33.333%;
+            float: left;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table.bgTable thead tr th {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        table.bgTable tbody tr td {
+            height: 100px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            text-align: right;
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        table.bgTable tbody tr td.gray {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+	<div id="calender">
+		<div class="form">
+		    <div class="input">
+		        <input type="text" v-model="year" onfocus="this.select()">年
+		        <input type="text" v-model="month" onfocus="this.select()" @keyup="testMonth">月
+		    </div>
+		    <div class="date">
+		        <h2>{{year}}年{{month}}月</h2>
+		    </div>
+		    <div class="btn">
+		        <button @click="decrement">&lt;</button>
+		        <button @click="increment">&gt;</button>
+		    </div>
+		</div>
+		<div class="tableBox1">
+		    <table class="bgTable">
+		        <thead>
+		        <tr>
+		            <th v-for="item in dayNameArr">{{item}}</th>
+		        </tr>
+		        </thead>
+		        <tbody>
+		        <tr v-for="week in (Math.ceil(dayArr.length/7))">
+		            <td v-for="item in theWeek(week)" :class="{'gray':item.prevMonth || item.nextMonth}">
+		                {{item.days}}
+		            </td>
+		        </tr>
+		        </tbody>
+		    </table>
+		</div>
+	</div>
+</body>
+<script src="./vue.min.js"></script>
+<script>
+	new Vue({
+	    el: '#calender',
+	    data(){
+	        return {
+	            dayNameArr: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+	            year: new Date().getFullYear(),
+	            month: new Date().getMonth() + 1
+	        }
+	    },
+	    methods: {
+	        //返回第几周的日期序列，每7个算一周共5周,序号从1开始
+	        theWeek(week){
+	            return this.dayArr.slice((week - 1) * 7, week * 7);
+	        },
+	        increment(){
+	            if (this.month >= 12) {
+	                this.month = 1;
+	                this.year++;
+	            } else {
+	                this.month++;
+	            }
+	        },
+	        decrement(){
+	            if (this.month <= 1) {
+	                this.month = 12;
+	                this.year--;
+	            } else {
+	                this.month--;
+	            }
+	        },
+	        testMonth(){
+	            // setTimeout(() => {}, 800)
+	            if (!this.month || this.month < 1 || this.month > 12) {
+	                this.month = new Date().getMonth() + 1;
+	            }//如果输入月份不合理，将月份改为当前月
+	        }
+	    },
+	    computed: {
+	        dayArr(){
+	            let dayArr = [];
+	            let theMonthFirstDay = new Date(this.year, this.month - 1, 1).getDay();//本月第一天是周几（第一排需要补几个）
+	            let y = this.month === 12 ? this.year + 1 : this.year; //下月所在的年份
+	            let m = this.month === 12 ? 1 : this.month;  //下个月是几月
+	            let theMonthDays = new Date(new Date(y, m, 1) - 1).getDate(); //这个月一共多上天（下个月一号的前一天是几号）
+	            let preMounthDays = new Date(new Date(this.year, this.month - 1, 1) - 1).getDate(); //这个月一共多上天（这个月一号的前一天是几号）
+	            //补足第一排
+	            while (theMonthFirstDay-- > 0) {
+	                dayArr.unshift({
+	                    'days': preMounthDays--,
+	                    'prevMonth': true
+	                });
+	            }
+	            //把这个月的日期push进数组
+	            let count = 1; //本月1号
+	            while (theMonthDays-- > 0) {
+	                dayArr.push({
+	                    'days': count++
+	                });
+	            }
+	            //补足最后一排
+	            count = 1;
+	            while (dayArr.length%7 != 0 ) {
+	                dayArr.push({
+	                    'days': count++,
+	                    'nextMonth': true
+	                })
+	            }
+	            return dayArr
+	        },
+	    }
+	});
+</script>
+</html>
