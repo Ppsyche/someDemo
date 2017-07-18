@@ -5,4 +5,4 @@
 [提示弹窗](https://psychee.github.io/someDemo/提示弹窗插件/index.html)
 [图片弹窗](https://psychee.github.io/someDemo/图片弹窗插件/index.html)
 [放大镜](https://psychee.github.io/someDemo/放大镜/index.html)
-[瀑布流](https://psychee.github.io/someDemo/瀑布流/index.html)
+[瀑布流](https://psychee.github.io/someDemo/瀑布流（懒加载）/index.html)
